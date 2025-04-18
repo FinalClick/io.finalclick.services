@@ -74,6 +74,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 /ProjectSettings/*
-!/ProjectSettings/.gitkeep
+!/ProjectSettings/ProjectVersion.txt
 
 *.DS_Store
