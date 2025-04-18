@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
@@ -10,6 +12,33 @@ namespace FinalClick.Services
     {
         private static readonly Dictionary<Scene, ServiceCollection> _sceneServices = new Dictionary<Scene, ServiceCollection>();
 
+        
+        [UsedImplicitly]
+        public static bool TryGet<TI>(Scene scene, out TI service)
+        {
+            Debug.Assert(scene.IsValid() == true, "Scene is not valid");
+
+            if (_sceneServices.TryGetValue(scene, out var services) == false)
+            {
+                throw new ArgumentException("Scene is not loaded", nameof(scene));
+            }
+            
+            return services.TryGet(out service);
+        }
+
+        [UsedImplicitly]
+        public static TI Get<TI>(Scene scene)
+        {
+            Debug.Assert(scene.IsValid() == true, "Scene is not valid");
+
+            if (_sceneServices.TryGetValue(scene, out var services) == false)
+            {
+                throw new ArgumentException("Scene is not loaded", nameof(scene));
+            }
+
+            return services.Get<TI>();
+        }
+        
         private static void StartServicesForScene(Scene scene)
         { 
             Debug.Assert(_sceneServices.ContainsKey(scene) == false, "Services already started");
