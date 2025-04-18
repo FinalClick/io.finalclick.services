@@ -17,7 +17,7 @@ Services can be registered using static methods, allowing you to create pure csh
 
 ## Features
 
-- 🔍 **Automatic Service Discovery** using the `RegisterApplicationServices` attribute.
+- 🔍 **Automatic Service Discovery** using the `RegisterServices` attribute.
 - 💡 **Global Application Services** via `ApplicationServices`.
 - 🎬 **Scene-scoped Services** via `SceneServices`.
 - 🔗 **MonoBehaviour-based Service Registration** for Unity object references.
@@ -30,12 +30,12 @@ Services can be registered using static methods, allowing you to create pure csh
 
 ### Registering Services
 
-To register services at the application level, create a static method marked with the `[RegisterApplicationServices]` attribute.
+To register services at the application level, create a static method marked with the `[RegisterServices]` attribute.
 
 Example:
 
 ```csharp
-[RegisterApplicationServices]
+[RegisterServices]
 public static void RegisterMyServices(ServiceCollectionBuilder builder)
 {
     builder.Register<IMyService, MyService>();
@@ -74,14 +74,14 @@ In addition to static methods, services can also be registered via MonoBehaviour
 #### For Application Scope Services
 
 1. Assign a application services prefab in the `Project Settings/ServiceSettings`.
-2. Define `[RegisterApplicationServices]` methods on components on the prefab
+2. Define `[RegisterServices]` methods on components on the prefab
 
 This prefab will be added to the first loaded scene and automatically call the register functions before the default Awake order. This allows you to use the services collection builder to create application services before the first scene is fully loaded.
 
 #### For Scene Scope Services
 
 1. Attach a `SceneServicesObject` to a **root** GameObject
-2. Any `[RegisterApplicationServices]` will be called on scene load and allow you to use the services collection builder to create scene services for the current scene.
+2. Any `[RegisterServices]` will be called on scene load and allow you to use the services collection builder to create scene services for the current scene.
 
 *(Note: a separate attribute like `RegisterSceneServices` is planned for future versions.)*
 

@@ -19,7 +19,7 @@ namespace FinalClick.Services
         
         public void CallAllAutoRegisterStaticFunctions()
         {
-            var methods = GetAllStaticRegisterApplicationServicesMethods();
+            var methods = GetAllStaticRegisterServicesMethods();
             InvokeRegisterMethods(methods);
         }
 
@@ -42,9 +42,9 @@ namespace FinalClick.Services
         
         private void InvokeRegisterMethod(MethodInfo method, object instance = null)
         {
-            if (RegisterApplicationServicesAttribute.IsMethodValid(method) == false)
+            if (RegisterServicesAttribute.IsMethodValid(method) == false)
             {
-                Debug.LogError($"Method {method.DeclaringType!.FullName}.{method.Name} marked with [{nameof(RegisterApplicationServicesAttribute)}] does not have the correct signature. Expected: static void Method(ServicesCollectionBuilder builder)");
+                Debug.LogError($"Method {method.DeclaringType!.FullName}.{method.Name} marked with [{nameof(RegisterServicesAttribute)}] does not have the correct signature. Expected: static void Method(ServicesCollectionBuilder builder)");
             }
 
             method.Invoke(instance, new object[] { this });
@@ -52,25 +52,25 @@ namespace FinalClick.Services
 
         private void CallAllAutoRegisterFunctionsOnMonoBehaviour(MonoBehaviour monoBehaviour)
         {
-            var methods = GetAllAutoRegisterApplicationServicesInstanceMethods(monoBehaviour);
+            var methods = GetAllAutoRegisterServicesInstanceMethods(monoBehaviour);
             InvokeRegisterMethods(methods, monoBehaviour);
         }
 
-        private static IEnumerable<MethodInfo> GetAllAutoRegisterApplicationServicesInstanceMethods(MonoBehaviour monoBehaviour)
+        private static IEnumerable<MethodInfo> GetAllAutoRegisterServicesInstanceMethods(MonoBehaviour monoBehaviour)
         {
             var methods = monoBehaviour.GetType()
                 .GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
-                .Where(method => method.GetCustomAttributes(typeof(RegisterApplicationServicesAttribute), false).Length > 0);
+                .Where(method => method.GetCustomAttributes(typeof(RegisterServicesAttribute), false).Length > 0);
             
             return methods;
         }
         
-        private static IEnumerable<MethodInfo> GetAllStaticRegisterApplicationServicesMethods()
+        private static IEnumerable<MethodInfo> GetAllStaticRegisterServicesMethods()
         {
             var methods = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .SelectMany(type => type.GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
-                .Where(method => method.GetCustomAttributes(typeof(RegisterApplicationServicesAttribute), false).Length > 0);
+                .Where(method => method.GetCustomAttributes(typeof(RegisterServicesAttribute), false).Length > 0);
             
             return methods;
         }

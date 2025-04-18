@@ -3,7 +3,8 @@ using System.Reflection;
 
 namespace FinalClick.Services
 {
-    public class RegisterApplicationServicesAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method)]
+    public class RegisterServicesAttribute : Attribute
     {
         internal static bool IsMethodValid(MethodInfo method)
         {

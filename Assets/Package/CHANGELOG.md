@@ -1,1 +1,24 @@
 # Changelog
+
+## [1.0.1] — 2025-04-18
+
+### Changed
+
+- Renamed `RegisterApplicationServices` to `RegisterServices`
+
+## [1.0.0] — 2025-04-18
+
+### Added
+- Initial release of `com.finalclick.services` 🎉
+- Application-wide service registration via static methods with `[RegisterApplicationServices]`.
+- Scene-specific service registration via `SceneServicesObject` and `[RegisterApplicationServices]` on components.
+- Support for MonoBehaviour-based service registration with asset references via prefab in Project Settings or asset/scene-object references with a SceneServiceObject in scenes.
+- `ApplicationServices.Get<T>()` and `ApplicationServices.TryGet<T>()` for global service resolution.
+- `SceneServices.Get<T>(Scene)` and `SceneServices.TryGet<T>(Scene, out T)` for scene-scoped service resolution.
+- `IService` interface for structured lifecycle management:
+    - `OnServiceStart()`
+    - `OnServiceUpdate()`
+    - `OnServiceStop()`
+- Automatic service startup and teardown during Play Mode transitions and scene load/unload.
+
+---
