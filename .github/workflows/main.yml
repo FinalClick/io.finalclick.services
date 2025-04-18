@@ -1,9 +1,5 @@
 name: Unity Test Runner
 
-permissions:
-  contents: write
-  actions: read
-
 on:
   push:
     branches: [main]
