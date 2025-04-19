@@ -1,8 +1,8 @@
 {
     "name": "com.finalclick.services",
-    "displayName": "Services",
+    "displayName": "FinalClick - Services",
     "author": {
-        "name": "Ceejay Smith",
+        "name": "FinalClick",
         "url": "https://github.com/FinalClick"
     },
     "keywords": [
