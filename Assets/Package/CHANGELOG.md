@@ -1,10 +1,26 @@
 # Changelog
 
+## [1.0.2] - 2025-04-19
+
+### Changed
+- Fixed `ApplicationServicesUpdates` not being created
+- Renamed `CallAllAutoRegisterStaticFunctions` to `RunStaticRegisterFunctions`
+- Renamed `CallAllAutoRegisterFunctionsOnGameObject` to `RegisterGameObject`
+
+### Added
+- Added function `RegisterManaged` for `ServiceCollectionBuilder` so you can register a managed service without a type
+- Added function `HasStartedForScene` for `SceneServices` to check if scenes services has been created and started
+- Added function `HasStarted` for `ApplicationServices` to check if application services has been created and started 
+- Added `ApplicationServicesTests` and `SceneServicesTests`
+
+---
+
 ## [1.0.1] — 2025-04-18
 
 ### Changed
+- Renamed `RegisterApplicationServices` to `RegisterGameObject`
 
-- Renamed `RegisterApplicationServices` to `RegisterServices`
+---
 
 ## [1.0.0] — 2025-04-18
 

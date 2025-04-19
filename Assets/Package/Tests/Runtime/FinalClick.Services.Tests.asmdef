@@ -3,7 +3,8 @@
     "rootNamespace": "FinalClick.Services.Tests",
     "references": [
         "UnityEngine.TestRunner",
-        "FinalClick.Services.Runtime"
+        "FinalClick.Services.Runtime",
+        "FinalClick.Services.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

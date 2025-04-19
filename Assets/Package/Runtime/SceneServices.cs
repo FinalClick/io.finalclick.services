@@ -12,6 +12,17 @@ namespace FinalClick.Services
     {
         private static readonly Dictionary<Scene, ServiceCollection> _sceneServices = new Dictionary<Scene, ServiceCollection>();
 
+        public static bool HasStartedForScene(Scene scene)
+        {
+            Debug.Assert(scene.IsValid() == true, "Scene is not valid");
+            
+            if (_sceneServices.TryGetValue(scene, out var services) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
         
         [UsedImplicitly]
         public static bool TryGet<TI>(Scene scene, out TI service)
@@ -49,7 +60,7 @@ namespace FinalClick.Services
 
             foreach (SceneServicesObject servicesObject in servicesObjects)
             {
-                builder.CallAllAutoRegisterFunctionsOnGameObject(servicesObject.gameObject);
+                builder.RegisterGameObject(servicesObject.gameObject);
             }
             
             var services = builder.Build();

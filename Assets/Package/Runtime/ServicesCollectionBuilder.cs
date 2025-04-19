@@ -17,18 +17,25 @@ namespace FinalClick.Services
             return new ServiceCollection(_managedServices, _registeredServices);
         }
         
-        public void CallAllAutoRegisterStaticFunctions()
+        public void RunStaticRegisterFunctions()
         {
             var methods = GetAllStaticRegisterServicesMethods();
             InvokeRegisterMethods(methods);
         }
 
-        public void CallAllAutoRegisterFunctionsOnGameObject(GameObject gameObject)
+        public void RegisterGameObject(GameObject gameObject)
         {
+            IService[] services = gameObject.GetComponentsInChildren<IService>(true);
+
+            foreach (IService service in services)
+            {
+                RegisterManaged(service);
+            }
+            
             MonoBehaviour[] allComponents = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
             foreach (MonoBehaviour component in allComponents)
             {
-                CallAllAutoRegisterFunctionsOnMonoBehaviour(component);
+                RunRegisterFunctionsOnMonoBehaviour(component);
             }
         }
         
@@ -50,7 +57,7 @@ namespace FinalClick.Services
             method.Invoke(instance, new object[] { this });
         }
 
-        private void CallAllAutoRegisterFunctionsOnMonoBehaviour(MonoBehaviour monoBehaviour)
+        private void RunRegisterFunctionsOnMonoBehaviour(MonoBehaviour monoBehaviour)
         {
             var methods = GetAllAutoRegisterServicesInstanceMethods(monoBehaviour);
             InvokeRegisterMethods(methods, monoBehaviour);
@@ -91,9 +98,18 @@ namespace FinalClick.Services
                 _registeredServices[t] = service;
             }
 
-            if (service is IService managedService && _managedServices.Contains(managedService) == false)
+            if (service is IService managedService)
             {
-                _managedServices.Add(managedService);
+                RegisterManaged(managedService);
+            }
+        }
+
+        [UsedImplicitly]
+        public void RegisterManaged(IService service)
+        {
+            if (_managedServices.Contains(service) == false)
+            {
+                _managedServices.Add(service);
             }
         }
         

@@ -12,7 +12,7 @@ namespace FinalClick.Services
         
         public static void EnsureHasUpdater()
         {
-            if (HasUpdater == false)
+            if (HasUpdater == true)
             {
                 return;
             }

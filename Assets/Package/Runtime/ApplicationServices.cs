@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 
@@ -8,6 +9,11 @@ namespace FinalClick.Services
     {
         private static ServiceCollection _serviceCollection;
         private static bool IsStarted => _serviceCollection != null && _serviceCollection.IsStarted;
+
+        public static bool HasStarted()
+        {
+            return IsStarted;
+        }
         
         internal static void StartFromGameObject(GameObject gameObject)
         {
@@ -15,8 +21,8 @@ namespace FinalClick.Services
             
             ServicesCollectionBuilder builder = new();
 
-            builder.CallAllAutoRegisterStaticFunctions();
-            builder.CallAllAutoRegisterFunctionsOnGameObject(gameObject);
+            builder.RunStaticRegisterFunctions();
+            builder.RegisterGameObject(gameObject);
             
             _serviceCollection = builder.Build();
             StartServices();
@@ -125,6 +131,5 @@ namespace FinalClick.Services
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
         }
-
     }
 }

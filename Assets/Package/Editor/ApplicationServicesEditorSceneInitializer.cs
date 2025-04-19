@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace FinalClick.Services.Editor
 {
+    // Using Initializer, rather than build preprocessor, to support disabling domain and scene reload.
     public static class ApplicationServicesEditorSceneInitializer
     {
         public static void SetGameObjectAsApplicationServices(GameObject gameObject)
