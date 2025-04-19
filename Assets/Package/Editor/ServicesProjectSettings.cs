@@ -5,7 +5,7 @@ namespace FinalClick.Services.Editor
 {
     public static class ServicesProjectSettings
     {
-        private const string ProjectSettingsPath = "ProjectSettings/ServiceSettings.asset";
+        private const string ProjectSettingsPath = "ProjectSettings/FinalClickServiceSettings.asset";
 
         private static ServicesProjectSettingsConfigObject _loadedConfig = null;
         

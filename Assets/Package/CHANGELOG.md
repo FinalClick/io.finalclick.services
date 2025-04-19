@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.4] - 2025-04-19
+
+### Changed
+- Renamed ProjectSettings file from `ServicesSettings` to `FinalClickServiceSettings`
+
 ## [1.0.3] - 2025-04-19
 
 ### Added
