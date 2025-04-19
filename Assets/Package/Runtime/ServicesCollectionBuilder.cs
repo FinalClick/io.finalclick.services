@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace FinalClick.Services
 {
@@ -32,13 +33,16 @@ namespace FinalClick.Services
                 RegisterManaged(service);
             }
             
-            MonoBehaviour[] allComponents = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
+            MonoBehaviour[] allComponents = gameObject.GetComponents<MonoBehaviour>();
             foreach (MonoBehaviour component in allComponents)
             {
                 RunRegisterFunctionsOnMonoBehaviour(component);
             }
+            
+            RegisterAnyRegisterAsServiceMonoBehaviours(allComponents);
         }
-        
+
+
         private void InvokeRegisterMethods(IEnumerable<MethodInfo> methods, object instance = null)
         {
             foreach (MethodInfo method in methods)
@@ -62,9 +66,42 @@ namespace FinalClick.Services
             var methods = GetAllAutoRegisterServicesInstanceMethods(monoBehaviour);
             InvokeRegisterMethods(methods, monoBehaviour);
         }
+        
+        private void RegisterAnyRegisterAsServiceMonoBehaviours(MonoBehaviour[] allComponents)
+        {
+            foreach (var component in allComponents)
+            {
+                TryAutoRegisterAsService(component);
+            }
+        }
+        
+        private bool TryAutoRegisterAsService(MonoBehaviour monoBehaviour)
+        {
+            // Can be null if "The references scripted on this Behaviour (Unknown) is missing!" warnings.
+            if (monoBehaviour == null)
+            {
+                return false;
+            }
+            
+            RegisterAsServiceAttribute attribute = monoBehaviour.GetType().GetCustomAttribute(typeof(RegisterAsServiceAttribute), false) as RegisterAsServiceAttribute;
+
+            if (attribute == null)
+            {
+                return false;
+            }
+
+            Register(monoBehaviour, attribute.RegisterTypes[0], attribute.RegisterTypes);
+            return true;
+        }
+
 
         private static IEnumerable<MethodInfo> GetAllAutoRegisterServicesInstanceMethods(MonoBehaviour monoBehaviour)
         {
+            // Can be null if "The references scripted on this Behaviour (Unknown) is missing!" warnings.
+            if (monoBehaviour == null)
+            {
+                return Array.Empty<MethodInfo>();
+            }
             var methods = monoBehaviour.GetType()
                 .GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
                 .Where(method => method.GetCustomAttributes(typeof(RegisterServicesAttribute), false).Length > 0);
@@ -92,6 +129,11 @@ namespace FinalClick.Services
 
             foreach (var t in types)
             {
+                if (type == t)
+                {
+                    continue;
+                }
+                
                 if (t.IsInstanceOfType(service) == false)
                     throw new ArgumentException($"Service must be assignable to {t}", nameof(types));
 
@@ -122,7 +164,21 @@ namespace FinalClick.Services
         [UsedImplicitly]
         public void Register<TI, T>(T service) where T : TI
         {
-            Register(service, typeof(TI));
+            Register(service, typeof(TI), typeof(T));
+        }
+        
+        [UsedImplicitly]
+        public void Register<T>(T service)
+        {
+            Register(service, typeof(T));
+        }
+
+        public void RegisterSceneServices(Scene scene)
+        {
+            foreach (GameObject go in scene.GetRootGameObjects())
+            {
+                RegisterGameObject(go);
+            }
         }
     }
 }

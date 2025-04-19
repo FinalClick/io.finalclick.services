@@ -54,14 +54,11 @@ namespace FinalClick.Services
         { 
             Debug.Assert(_sceneServices.ContainsKey(scene) == false, "Services already started");
             
-            var servicesObjects = GetSceneServiceObjects(scene);
+            var servicesObjects = GetRootMonoBehaviours(scene);
 
             ServicesCollectionBuilder builder = new();
 
-            foreach (SceneServicesObject servicesObject in servicesObjects)
-            {
-                builder.RegisterGameObject(servicesObject.gameObject);
-            }
+            builder.RegisterSceneServices(scene);
             
             var services = builder.Build();
             _sceneServices.Add(scene, services);
@@ -100,15 +97,15 @@ namespace FinalClick.Services
             Debug.Log($"Stopped services for scene: {scene.name}({scene.handle})");
         }
 
-        private static IReadOnlyList<SceneServicesObject> GetSceneServiceObjects(Scene scene)
+        private static IReadOnlyList<MonoBehaviour> GetRootMonoBehaviours(Scene scene)
         {
-            List<SceneServicesObject> servicesObjects = new();
+            List<MonoBehaviour> rootMonos = new();
             foreach (var go in scene.GetRootGameObjects())
             {
-                servicesObjects.AddRange(go.GetComponents<SceneServicesObject>());
+                rootMonos.AddRange(go.GetComponents<MonoBehaviour>());
             }
             
-            return servicesObjects;
+            return rootMonos;
         }
 
 

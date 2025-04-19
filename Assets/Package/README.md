@@ -17,12 +17,12 @@ Services can be registered using static methods, allowing you to create pure csh
 
 ## Features
 
-- 🔍 **Automatic Service Discovery** using the `RegisterServices` attribute.
+- 🔍 **Automatic Service Discovery** using the `RegisterServices` and `RegisterAsService` attributes.
 - 💡 **Global Application Services** via `ApplicationServices`.
 - 🎬 **Scene-scoped Services** via `SceneServices`.
-- 🔗 **MonoBehaviour-based Service Registration** for Unity object references.
+- 🔗 **Inspector Unity Object Reference Support** when using MonoBehaviour services in scenes or application services prefab.
 - ⚙️ **Lifecycle Hooks** via the `IService` interface.
-- 🚀 **Disable Domain Reload Support**: automatic start and stop during scene load and unload, and when entering or exiting Play Mode.
+- 🚀 **Disable Domain Reload Support**: automatic start and stops services during scene load and unload, and when entering or exiting Play Mode.
 
 ---
 
@@ -46,6 +46,15 @@ public static void RegisterMyServices(ServiceCollectionBuilder builder)
 - It must accept exactly **one parameter**: `ServiceCollectionBuilder`.
 - These methods are automatically called **before the first scene is loaded**.
 
+Or, using a Application Services Prefab, use the `[RegisterServices]` or `[RegisterAsService]` on a root MonoBehavior on the prefab:
+
+1. Assign a application services prefab in the `Project Settings/ServiceSettings`.
+2. Register services either:
+   1. Define `[RegisterServices]` methods on components on the prefab, then manually register using ServiceCollectionBuilder functions.
+   2. Define `[RegisterServiceAs(Type[])]` on a MonoBehaviour class, attach to serivces prefab, and it will be automatically registered.
+
+This prefab will be automatically injected into the first scene that's loaded.
+
 ---
 
 ### Accessing Application Services
@@ -67,27 +76,35 @@ if (ApplicationServices.TryGet<IMyService>(out var service))
 
 ---
 
-## MonoBehaviour-based Service Registration
+## Scene Service Registration
 
-In addition to static methods, services can also be registered via MonoBehaviours.
-
-#### For Application Scope Services
-
-1. Assign a application services prefab in the `Project Settings/ServiceSettings`.
-2. Define `[RegisterServices]` methods on components on the prefab
-
-This prefab will be added to the first loaded scene and automatically call the register functions before the default Awake order. This allows you to use the services collection builder to create application services before the first scene is fully loaded.
+Scene services can be registered via MonoBehaviours.
 
 #### For Scene Scope Services
 
-1. Attach a `SceneServicesObject` to a **root** GameObject
-2. Any `[RegisterServices]` will be called on scene load and allow you to use the services collection builder to create scene services for the current scene.
+1. Any `[RegisterServices]` methods on a root GameObjects MonoBehaviour will be called on scene load. 
+2. Any `[RegisterAsService]` MonoBehaviours will be registered on scene load, IF on a root GameObject in the scene.
 
 ---
 
 ### Accessing Scene Services
 
 You can retrieve services registered to a specific scene using:
+
+via `MonoBehaviour` and `GameObject` extension methods. These automatically check the scene scope serivces for their scene before getting the service from the ApplicationServices.
+
+```csharp
+public class ExampleComponent : MonoBehavour
+{
+    void Awake()
+    {
+        this.GetService<IMyService>();
+        gameobject.GetService<IMyService>();
+    }
+}
+```
+
+or via the Static class if working outside of unity code.
 
 ```csharp
 var service = SceneServices.Get<IMySceneService>(scene);
@@ -140,13 +157,3 @@ namespace FinalClick.Services
 | Exiting Play Mode / Application Quit | Application and scene services are stopped.      |
 
 ---
-
-## Roadmap
-
-- [ ] Add Monobehaviour and GameObject extension methods to easily get SceneServices for their scene.
-
----
-
-## Summary
-
-`com.finalclick.services` provides a clean, reliable way to structure both global and scene-level services in Unity. Whether you prefer pure C# or need asset/scene references through MonoBehaviours, this package helps you build robust systems with minimal boilerplate.

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.3] - 2025-04-19
+
+### Added
+- **GameObject** and **MonoBehaviour** extension methods `this.GetService<T>` and `this.TryGetService<T>`
+  - These functions will first try to get the scene service for a type, and then fall back to the application service if the scene doesnt have that type.
+- `RegisterAsService` attribute to automatically register MonoBehaviours as services.
+  - SceneServices: The attribute must be on a MonoBehaviour on a root GameObject in the Scene.
+  - ApplicationServices: The attribute must be on a MonoBehaviour on the root GameObject of the prefab. 
+- 
+
 ## [1.0.2] - 2025-04-19
 
 ### Changed
