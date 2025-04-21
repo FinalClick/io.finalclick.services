@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FinalClick.Services.Attributes;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,7 +21,7 @@ namespace FinalClick.Services
         
         public void RunStaticRegisterFunctions()
         {
-            var methods = GetAllStaticRegisterServicesMethods();
+            var methods = RegisterServicesAttribute.GetAllStaticRegisterServicesMethods();
             InvokeRegisterMethods(methods);
         }
 
@@ -63,7 +64,7 @@ namespace FinalClick.Services
 
         private void RunRegisterFunctionsOnMonoBehaviour(MonoBehaviour monoBehaviour)
         {
-            var methods = GetAllAutoRegisterServicesInstanceMethods(monoBehaviour);
+            var methods = RegisterAsServiceAttribute.GetAllAutoRegisterServicesInstanceMethods(monoBehaviour);
             InvokeRegisterMethods(methods, monoBehaviour);
         }
         
@@ -95,30 +96,7 @@ namespace FinalClick.Services
         }
 
 
-        private static IEnumerable<MethodInfo> GetAllAutoRegisterServicesInstanceMethods(MonoBehaviour monoBehaviour)
-        {
-            // Can be null if "The references scripted on this Behaviour (Unknown) is missing!" warnings.
-            if (monoBehaviour == null)
-            {
-                return Array.Empty<MethodInfo>();
-            }
-            var methods = monoBehaviour.GetType()
-                .GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
-                .Where(method => method.GetCustomAttributes(typeof(RegisterServicesAttribute), false).Length > 0);
-            
-            return methods;
-        }
-        
-        private static IEnumerable<MethodInfo> GetAllStaticRegisterServicesMethods()
-        {
-            var methods = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .SelectMany(type => type.GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
-                .Where(method => method.GetCustomAttributes(typeof(RegisterServicesAttribute), false).Length > 0);
-            
-            return methods;
-        }
-
+ 
         [UsedImplicitly]
         public void Register(object service, Type type, params Type[] types)
         {
