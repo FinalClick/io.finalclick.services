@@ -1,5 +1,11 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
+using System.Linq;
+using UnityEditor;
 
 namespace FinalClick.Services.Editor
 {
@@ -13,16 +19,10 @@ namespace FinalClick.Services.Editor
         {
             var configObject = GetOrCreateServicesSettingsConfigObject();
 
-            if (configObject == null)
-            {
-                servicesPrefab = null;
-                return false;
-            }
-
             servicesPrefab = configObject.ServicesPrefab;
             return servicesPrefab != null;
         }
-
+        
         private static ServicesProjectSettingsConfigObject GetOrCreateServicesSettingsConfigObject()
         {
             if (_loadedConfig == null)
@@ -58,6 +58,41 @@ namespace FinalClick.Services.Editor
         private static void SaveConfigObject(ServicesProjectSettingsConfigObject configObject)
         {
             InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] { configObject }, ProjectSettingsPath, true);
+        }
+
+        public static List<ApplicationServiceRegistrationSavedData> GetApplicationServiceData()
+        {
+            var configObject = GetOrCreateServicesSettingsConfigObject();
+            return configObject.ApplicationServiceData;
+        }
+
+        private static void SyncApplicationServiceDataWithCurrentTypes()
+        {
+            var configObject = GetOrCreateServicesSettingsConfigObject();
+            if (configObject == null) return;
+
+            var validTypes = FinalClick.Services.Attributes.RegisterAsApplicationServiceAttribute.GetTypesWithApplicationServiceAttribute().ToHashSet();
+
+            // Remove any types that should no longer be registered.
+            configObject.ApplicationServiceData.RemoveAll(data => data.DoesServiceTypeStillRequireRegistration() == false);
+
+            foreach (var type in validTypes)
+            {
+                bool exists = configObject.ApplicationServiceData.Exists(data => data.GetServiceType() == type);
+                if (!exists)
+                {
+                    ApplicationServiceRegistrationSavedData newData = new ApplicationServiceRegistrationSavedData(type);
+                    configObject.ApplicationServiceData.Add(newData);
+                }
+            }
+
+            SaveConfigObject(configObject);
+        }
+
+        [InitializeOnLoadMethod]
+        private static void OnProjectRecompile()
+        {
+            SyncApplicationServiceDataWithCurrentTypes();
         }
     }
 }
