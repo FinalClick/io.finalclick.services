@@ -31,7 +31,8 @@ namespace FinalClick.Services
 
             if (_sceneServices.TryGetValue(scene, out var services) == false)
             {
-                throw new ArgumentException("Scene is not loaded", nameof(scene));
+                service = default;
+                return false;
             }
             
             return services.TryGet(out service);

@@ -55,6 +55,12 @@ namespace FinalClick.Services
         [UsedImplicitly]
         public static bool TryGet<TI>(out TI service)
         {
+            if (HasStarted() == false)
+            {
+                service = default;
+                return false;
+            }
+            
             return _serviceCollection.TryGet(out service);
         }
 
