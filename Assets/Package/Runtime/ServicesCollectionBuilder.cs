@@ -91,27 +91,24 @@ namespace FinalClick.Services
                 return false;
             }
 
-            Register(monoBehaviour, attribute.RegisterTypes[0], attribute.RegisterTypes);
+            if (attribute.RegisterSelfAsServiceType == true)
+            {
+                Register(monoBehaviour, monoBehaviour.GetType());
+            }
+            else
+            {
+                Register(monoBehaviour, attribute.RegisterTypes);
+            }
             return true;
         }
 
-
  
         [UsedImplicitly]
-        public void Register(object service, Type type, params Type[] types)
+        public void Register(object service, params Type[] types)
         {
-            if (type.IsInstanceOfType(service) == false)
-                throw new ArgumentException($"Service must be assignable to {type}", nameof(service));
-
-            _registeredServices[type] = service;
-
             foreach (var t in types)
             {
-                if (type == t)
-                {
-                    continue;
-                }
-                
+
                 if (t.IsInstanceOfType(service) == false)
                     throw new ArgumentException($"Service must be assignable to {t}", nameof(types));
 
@@ -124,8 +121,7 @@ namespace FinalClick.Services
             }
         }
 
-        [UsedImplicitly]
-        public void RegisterManaged(IService service)
+        private void RegisterManaged(IService service)
         {
             if (_managedServices.Contains(service) == false)
             {
@@ -156,6 +152,42 @@ namespace FinalClick.Services
             foreach (GameObject go in scene.GetRootGameObjects())
             {
                 RegisterGameObject(go);
+            }
+        }
+
+        public void RegisterAutoRegisterAsApplicationAttributeService()
+        {
+            var types = RegisterAsApplicationServiceAttribute.GetTypesWithApplicationServiceAttribute();
+
+            foreach (var type in types)
+            {
+                object instance;
+                try
+                {
+                    instance = Activator.CreateInstance(type);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to create instance of type {type.FullName}: {ex.Message}");
+                    continue;
+                }
+
+                var attribute = type.GetCustomAttribute<RegisterAsApplicationServiceAttribute>(false);
+                if (attribute == null)
+                {
+                    Debug.LogError($"Type {type.FullName} was expected to have {nameof(RegisterAsApplicationServiceAttribute)} but none was found.");
+                    continue;
+                }
+
+                if (attribute.RegisterSelfAsServiceType == true)
+                {
+                    Register(instance, instance.GetType());
+                }
+                else
+                {
+                    
+                    Register(instance, attribute.RegisterTypes);
+                }
             }
         }
     }

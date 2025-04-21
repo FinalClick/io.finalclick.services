@@ -21,6 +21,7 @@ namespace FinalClick.Services
             
             ServicesCollectionBuilder builder = new();
 
+            builder.RegisterAutoRegisterAsApplicationAttributeService();
             builder.RunStaticRegisterFunctions();
             builder.RegisterGameObject(gameObject);
             
