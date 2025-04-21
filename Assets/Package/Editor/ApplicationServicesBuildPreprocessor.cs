@@ -17,9 +17,8 @@ namespace FinalClick.Services.Editor
                 return;
             }
 
-            // Only inject when building,
-            // ApplicationServicesEditorSceneInitializer will handle creating application services in editor
-            if (Application.isPlaying == true)
+            // If already created application services, we dont need to do again.
+            if(Application.isPlaying == true && ApplicationServices.HasStarted() == true)
             {
                 return;
             }
@@ -34,10 +33,15 @@ namespace FinalClick.Services.Editor
                 }
             }
 
-            ApplicationServicesEditorSceneInitializer.SetGameObjectAsApplicationServices(servicesInstance);
+            SetGameObjectAsApplicationServices(servicesInstance);
 
             servicesInstance.AddComponent<ApplicationServicesMarker>();
             Debug.Log($"Injecting {servicesInstance.name} into {scene.name}");
+        }
+        
+        private static void SetGameObjectAsApplicationServices(GameObject gameObject)
+        {
+            gameObject.AddComponent<ApplicationServicesMarker>();
         }
     }
 }
