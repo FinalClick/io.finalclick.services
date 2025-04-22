@@ -24,19 +24,21 @@ namespace FinalClick.Services.Editor
             }
             
             // Create from prefab in settings, or make blank gameobject.
-            if (ServicesProjectSettings.TryGetServicesPrefab(out GameObject servicesInstance) == false)
-            {
-                servicesInstance = new GameObject("ApplicationServices");
-                if (servicesInstance.scene != scene)
-                {
-                    throw new BuildFailedException("Services marker created in wrong scene.");
-                }
-            }
+            bool usePrefab = ServicesProjectSettings.TryGetServicesPrefab(out GameObject servicesPrefab);
 
+            GameObject servicesInstance = usePrefab ? GameObject.Instantiate(servicesPrefab) : new GameObject("Application Services");
+
+            AddSavedServicesToApplicationServices(servicesInstance);
             SetGameObjectAsApplicationServices(servicesInstance);
-
-            servicesInstance.AddComponent<ApplicationServicesMarker>();
+            
             Debug.Log($"Injecting {servicesInstance.name} into {scene.name}");
+        }
+
+        private void AddSavedServicesToApplicationServices(GameObject gameObject)
+        {
+            var component = gameObject.AddComponent<RegisterSavedApplicationServices>();
+            var servicesData = ServicesProjectSettings.GetApplicationServiceRegistrationData();
+            component.SetData(servicesData);
         }
         
         private static void SetGameObjectAsApplicationServices(GameObject gameObject)

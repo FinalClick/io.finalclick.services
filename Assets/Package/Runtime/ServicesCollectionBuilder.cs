@@ -190,5 +190,10 @@ namespace FinalClick.Services
                 }
             }
         }
+
+        public bool TryGet(Type type, out object instance)
+        {
+            return _registeredServices.TryGetValue(type, out instance);
+        }
     }
 }

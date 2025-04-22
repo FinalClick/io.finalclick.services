@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using System.Linq;
 using UnityEditor;
 
@@ -11,7 +7,7 @@ namespace FinalClick.Services.Editor
 {
     public static class ServicesProjectSettings
     {
-        private const string ProjectSettingsPath = "ProjectSettings/FinalClickServiceSettings.asset";
+        private const string SettingsPath = "Assets/FinalClickServiceSettings.asset";
 
         private static ServicesProjectSettingsConfigObject _loadedConfig = null;
         
@@ -23,18 +19,17 @@ namespace FinalClick.Services.Editor
             return servicesPrefab != null;
         }
         
+        public static IReadOnlyList<ApplicationServiceRegistrationSavedData> GetApplicationServiceRegistrationData()
+        {
+            var configObject = GetOrCreateServicesSettingsConfigObject();
+            return configObject.ApplicationServiceData;
+        }
+        
         private static ServicesProjectSettingsConfigObject GetOrCreateServicesSettingsConfigObject()
         {
             if (_loadedConfig == null)
             {
-                var loadedObjects = InternalEditorUtility
-                    .LoadSerializedFileAndForget(ProjectSettingsPath);
-                if (loadedObjects.Length > 0)
-                {
-                    Debug.Assert(loadedObjects.Length == 1, "Too many objects were loaded.");
-                    Debug.Assert(loadedObjects[0] is ServicesProjectSettingsConfigObject, $"Services saved object is not a {nameof(ServicesProjectSettingsConfigObject)}");
-                    _loadedConfig = loadedObjects[0] as ServicesProjectSettingsConfigObject;
-                }
+                _loadedConfig = AssetDatabase.LoadAssetAtPath<ServicesProjectSettingsConfigObject>(SettingsPath);
             }
 
             if (_loadedConfig == null)
@@ -57,7 +52,7 @@ namespace FinalClick.Services.Editor
 
         private static void SaveConfigObject(ServicesProjectSettingsConfigObject configObject)
         {
-            InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] { configObject }, ProjectSettingsPath, true);
+            EditorUtility.SetDirty(configObject);
         }
 
         public static List<ApplicationServiceRegistrationSavedData> GetApplicationServiceData()
@@ -93,6 +88,16 @@ namespace FinalClick.Services.Editor
         private static void OnProjectRecompile()
         {
             SyncApplicationServiceDataWithCurrentTypes();
+        }
+
+        public static void Save()
+        {
+            SaveConfigObject(GetOrCreateServicesSettingsConfigObject());
+        }
+
+        public static ServicesProjectSettingsConfigObject GetConfig()
+        {
+            return GetOrCreateServicesSettingsConfigObject();
         }
     }
 }
