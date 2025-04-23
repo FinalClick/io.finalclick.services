@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [1.0.6] - 2025-04-23
+
+### Changed
+- Ensure services are not initialized again if loading back into the first scene.
+
 ## [1.0.5] - 2025-04-23
 
 ### Added
