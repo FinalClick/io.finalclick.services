@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 
 namespace FinalClick.Services.Editor
 {
@@ -19,7 +20,7 @@ namespace FinalClick.Services.Editor
             return servicesPrefab != null;
         }
         
-        public static IReadOnlyList<ApplicationServiceRegistrationSavedData> GetApplicationServiceRegistrationData()
+        public static IReadOnlyList<ApplicationServiceRegistrationData> GetApplicationServiceRegistrationData()
         {
             var configObject = GetOrCreateServicesSettingsConfigObject();
             return configObject.ApplicationServiceData;
@@ -29,7 +30,14 @@ namespace FinalClick.Services.Editor
         {
             if (_loadedConfig == null)
             {
-                _loadedConfig = AssetDatabase.LoadAssetAtPath<ServicesProjectSettingsConfigObject>(SettingsPath);
+                var loadedObjects = InternalEditorUtility
+                    .LoadSerializedFileAndForget(SettingsPath);
+                if (loadedObjects.Length > 0)
+                {
+                    Debug.Assert(loadedObjects.Length == 1, "Too many objects were loaded.");
+                    Debug.Assert(loadedObjects[0] is ServicesProjectSettingsConfigObject, $"Services saved object is not a {nameof(ServicesProjectSettingsConfigObject)}");
+                    _loadedConfig = loadedObjects[0] as ServicesProjectSettingsConfigObject;
+                }
             }
 
             if (_loadedConfig == null)
@@ -52,10 +60,10 @@ namespace FinalClick.Services.Editor
 
         private static void SaveConfigObject(ServicesProjectSettingsConfigObject configObject)
         {
-            EditorUtility.SetDirty(configObject);
+            InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] { configObject }, SettingsPath, true);
         }
 
-        public static List<ApplicationServiceRegistrationSavedData> GetApplicationServiceData()
+        public static List<ApplicationServiceRegistrationData> GetApplicationServiceData()
         {
             var configObject = GetOrCreateServicesSettingsConfigObject();
             return configObject.ApplicationServiceData;
@@ -69,14 +77,14 @@ namespace FinalClick.Services.Editor
             var validTypes = FinalClick.Services.Attributes.RegisterAsApplicationServiceAttribute.GetTypesWithApplicationServiceAttribute().ToHashSet();
 
             // Remove any types that should no longer be registered.
-            configObject.ApplicationServiceData.RemoveAll(data => data.DoesServiceTypeStillRequireRegistration() == false);
+            configObject.ApplicationServiceData.RemoveAll(data => data.IsDataStillValid() == false);
 
             foreach (var type in validTypes)
             {
                 bool exists = configObject.ApplicationServiceData.Exists(data => data.GetServiceType() == type);
                 if (!exists)
                 {
-                    ApplicationServiceRegistrationSavedData newData = new ApplicationServiceRegistrationSavedData(type);
+                    ApplicationServiceRegistrationData newData = new ApplicationServiceRegistrationData(type);
                     configObject.ApplicationServiceData.Add(newData);
                 }
             }

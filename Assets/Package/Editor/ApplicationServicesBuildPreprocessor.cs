@@ -36,7 +36,7 @@ namespace FinalClick.Services.Editor
 
         private void AddSavedServicesToApplicationServices(GameObject gameObject)
         {
-            var component = gameObject.AddComponent<RegisterSavedApplicationServices>();
+            var component = gameObject.AddComponent<RegisterApplicationServices>();
             var servicesData = ServicesProjectSettings.GetApplicationServiceRegistrationData();
             component.SetData(servicesData);
         }

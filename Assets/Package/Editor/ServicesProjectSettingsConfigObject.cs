@@ -9,7 +9,7 @@ namespace FinalClick.Services.Editor
         private GameObject _servicesPrefab;
 
         [SerializeField]
-        private List<ApplicationServiceRegistrationSavedData> _applicationServiceData = new List<ApplicationServiceRegistrationSavedData>();
+        private List<ApplicationServiceRegistrationData> _applicationServiceData = new List<ApplicationServiceRegistrationData>();
         
         public GameObject ServicesPrefab
         {
@@ -17,6 +17,6 @@ namespace FinalClick.Services.Editor
             set => _servicesPrefab = value;
         }
 
-        public List<ApplicationServiceRegistrationSavedData> ApplicationServiceData => _applicationServiceData;
+        public List<ApplicationServiceRegistrationData> ApplicationServiceData => _applicationServiceData;
     }
 }

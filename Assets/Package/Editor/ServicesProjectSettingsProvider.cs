@@ -7,13 +7,16 @@ namespace FinalClick.Services.Editor
         [SettingsProvider]
         public static SettingsProvider CreateServicesSettingsProvider()
         {
-            UnityEditor.Editor editor = UnityEditor.Editor.CreateEditor(ServicesProjectSettings.GetConfig());
+          
             var provider = new SettingsProvider("Project/FinalClick/Services", SettingsScope.Project)
             {
                 label = "Services",
                 guiHandler = (_) =>
                 {
+                    var config = ServicesProjectSettings.GetConfig();
+                    UnityEditor.Editor editor = UnityEditor.Editor.CreateEditor(config);
                     editor.OnInspectorGUI();
+                    ServicesProjectSettings.Save();
                 }
             };
 
