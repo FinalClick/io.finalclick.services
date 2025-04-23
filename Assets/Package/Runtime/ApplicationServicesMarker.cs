@@ -7,6 +7,12 @@ namespace FinalClick.Services
     {
         private void Awake()
         {
+            if (ApplicationServices.HasStarted() == true)
+            {
+                DestroyImmediate(gameObject);
+                return;
+            }
+            
             DontDestroyOnLoad(gameObject);
             ApplicationServices.StartFromGameObject(gameObject);
         }
