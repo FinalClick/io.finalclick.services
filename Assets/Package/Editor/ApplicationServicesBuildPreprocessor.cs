@@ -11,8 +11,8 @@ namespace FinalClick.Services.Editor
 
         public void OnProcessScene(Scene scene, BuildReport report)
         {
-            // Only inject into the first scene bool scene
-            if (SceneManager.GetSceneAt(0) != scene)
+            // Only inject into the first scene boot scene when building.
+            if (Application.isPlaying == false && SceneManager.GetSceneAt(0) != scene)
             {
                 return;
             }
