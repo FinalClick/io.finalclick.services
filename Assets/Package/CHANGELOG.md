@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.5] - 2025-04-23
+
+### Added
+- Added support to auto register pure csharp classes with the `RegisterAsService` attribute
+  - They must have a default constructor
+
+###
+- General bug fixes
+
 ## [1.0.4] - 2025-04-19
 
 ### Changed
