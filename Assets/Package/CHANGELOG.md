@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [1.0.7] - 2025-04-29
+
+### Changed
+- Scene Services are now unloaded by a GameObject added to each scene, rather than Unload callback from scene manager.
+  - This is to fix an issue where the service that are gameobjects were already destroyed before the Unload callback.
+
 ## [1.0.6] - 2025-04-23
 
 ### Changed
