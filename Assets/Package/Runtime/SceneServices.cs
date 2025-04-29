@@ -55,14 +55,19 @@ namespace FinalClick.Services
         { 
             Debug.Assert(_sceneServices.ContainsKey(scene) == false, "Services already started");
             
-            var servicesObjects = GetRootMonoBehaviours(scene);
-
             ServicesCollectionBuilder builder = new();
 
             builder.RegisterSceneServices(scene);
             
             var services = builder.Build();
             _sceneServices.Add(scene, services);
+            
+            // Create a gameobject in the scene created, and then add a scene stopper.
+            GameObject stopped = new GameObject("SceneServiceStopper");
+            stopped.transform.SetParent(scene.GetRootGameObjects()[0].transform);
+            stopped.transform.parent = null;
+            stopped.AddComponent<SceneServiceStopper>();
+            
             services.StartServices();
             Debug.Log($"Started services for scene: {scene.name}({scene.handle})");
         }
@@ -86,7 +91,7 @@ namespace FinalClick.Services
             }
         }
         
-        private static void StopServicesForScene(Scene scene)
+        internal static void StopServicesForScene(Scene scene)
         {
             if (_sceneServices.TryGetValue(scene, out var services) == false)
             {
@@ -119,12 +124,6 @@ namespace FinalClick.Services
             BindDelegates();
         }
 
-        private static void OnSceneUnloaded(Scene scene)
-        {
-            StopServicesForScene(scene);
-        }
-
-
         private static void OnSceneLoaded(Scene scene, LoadSceneMode _)
         {
             StartServicesForScene(scene);
@@ -134,7 +133,6 @@ namespace FinalClick.Services
         {
             Application.quitting += OnApplicationQuitting;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
@@ -144,7 +142,6 @@ namespace FinalClick.Services
         {
             Application.quitting -= OnApplicationQuitting;
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
