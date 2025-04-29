@@ -67,6 +67,7 @@ namespace FinalClick.Services
             stopped.transform.SetParent(scene.GetRootGameObjects()[0].transform);
             stopped.transform.parent = null;
             stopped.AddComponent<SceneServiceStopper>();
+            stopped.transform.SetAsFirstSibling();
             
             services.StartServices();
             Debug.Log($"Started services for scene: {scene.name}({scene.handle})");
