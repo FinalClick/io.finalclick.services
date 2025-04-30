@@ -1,22 +1,16 @@
 using System;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace FinalClick.Services
 {
-    public static class GameObjectExtensions
+    public static class SceneExtensions
     {
         [UsedImplicitly]
-        public static bool TryGetService<T>(this GameObject gameObject, out T service)
+        public static bool TryGetService<T>(this Scene scene, out T service)
         {
-            if (gameObject == null)
-            {
-                // Can be null when scene is destroyed.
-                service = default;
-                return false;
-            }
-            
-            if (SceneServices.TryGet<T>(gameObject.scene, out service) == true)
+            if (SceneServices.TryGet<T>(scene, out service) == true)
             {
                 return true;
             }
@@ -31,9 +25,9 @@ namespace FinalClick.Services
         }
 
         [UsedImplicitly]
-        public static T GetService<T>(this GameObject gameObject)
+        public static T GetService<T>(this Scene scene)
         {
-            if (TryGetService<T>(gameObject, out var service) == false)
+            if (TryGetService<T>(scene, out var service) == false)
             {
                 throw new ArgumentException("Service not found.");
             }

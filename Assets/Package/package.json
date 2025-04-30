@@ -11,7 +11,7 @@
         "injection",
         "dependency"
     ],
-    "version": "1.0.7",
+    "version": "2.0.0",
     "unity": "2019.4",
     "description": "A lightweight service registration and dependency access framework for Unity.",
     "dependencies": {}

@@ -1,3 +1,4 @@
+using FinalClick.Services.Injection;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace FinalClick.Services
     {
         private static ServiceCollection _serviceCollection;
         private static bool IsStarted => _serviceCollection != null && _serviceCollection.IsStarted;
+        internal static ServiceCollection ServiceCollection => _serviceCollection;
 
         public static bool HasStarted()
         {
@@ -28,6 +30,7 @@ namespace FinalClick.Services
             _serviceCollection = builder.Build();
             StartServices();
         }
+
 
         internal static bool TryUpdate()
         {
@@ -83,6 +86,8 @@ namespace FinalClick.Services
             
             Debug.Log("Started application services.");
         }
+        
+
         
         private static void UpdateServices()
         {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.0] - 2025-04-30
+
+### Added
+- Added `InjectService` Attribute.
+  - This attribute cna be applied to properties on services. When a service is started, it will be injected with its requested services.
+  - SceneServices can also have ApplicationServices injected, if the scene doesnt contain a service of the requested type
+- Added service locator extension methods for scene type
+### Changed
+- Added null check to GameObject when calling GameObject.TryGetService, so it doesnt attempt to use GameObject when destroyed (e.g. within scene unload)
+### Remove
+  - Removed MonoBehaviour extension methods for getting services. 
+    - This is to discourage from using GetService and TryGetService within a scene services and instead to use InjectService. 
+      - This is so services can be put into Application or SceneServices, or from monobehaviour to pure csharp services, with minimal changes.
+  - 
 
 ## [1.0.7] - 2025-04-29
 

@@ -69,7 +69,7 @@ namespace FinalClick.Services
             stopped.AddComponent<SceneServiceStopper>();
             stopped.transform.SetAsFirstSibling();
             
-            services.StartServices();
+            services.StartServices(ApplicationServices.ServiceCollection);
             Debug.Log($"Started services for scene: {scene.name}({scene.handle})");
         }
 
