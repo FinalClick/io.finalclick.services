@@ -6,6 +6,43 @@ A lightweight and flexible service registration system for Unity, designed to si
 
 ---
 
+## 🚀 Getting Started in Seconds
+
+Register a service with just one attribute:
+
+```csharp
+[RegisterAsService]
+public class MyService : MonoBehaviour
+{
+}
+```
+or
+```csharp
+[RegisterServices]
+public static void Register(ServiceCollectionBuilder builder)
+{
+    builder.Register<IMyService, MyService>();
+}
+```
+
+Then access it with:
+
+```csharp
+var myService = gameObject.Get<MyService>();
+```
+
+Or inject it directly into other services:
+
+```csharp
+[InjectService]
+private IMyService MyService { get; } = null!;
+```
+
+FinalClick.Services takes care of discovery, lifecycle, and injection—**so you can focus on your game logic.**
+
+
+---
+
 ## Overview
 
 `FinalClick.Services` allows you to register and resolve services both at the application level and per scene. The system is designed to integrate naturally with Unity's Play Mode lifecycle and scene loading events.
@@ -31,7 +68,7 @@ Services can be registered using static methods, allowing you to create pure csh
 
 ### Registering Services
 
-To register services at the application level, create a static method marked with the `[RegisterServices]` attribute.
+To register services at the application level, accessible from anywhere in code, create a static method marked with the `[RegisterServices]` attribute.
 
 Example:
 
@@ -47,7 +84,7 @@ public static void RegisterMyServices(ServiceCollectionBuilder builder)
 - It must accept exactly **one parameter**: `ServiceCollectionBuilder`.
 - These methods are automatically called **before the first scene is loaded**.
 
-Or, using a Application Services Prefab, use the `[RegisterServices]` (on a function) or `[RegisterAsService]` (on the class) on a root MonoBehavior on the prefab:
+Or, using a Application Services Prefab, use the `[RegisterServices]` (on a member function) or `[RegisterAsService]` (on the class) on a root MonoBehavior on the prefab:
 
 ```csharp
 [RegisterAsService]
@@ -67,11 +104,9 @@ public class OtherService : MonoBehavour
     }
 }
 ```
-
-1. Assign a application services prefab in the `Project Settings/ServiceSettings`.
-2. Register services either:
-   1. Define `[RegisterServices]` methods on components on the prefab, then manually register using ServiceCollectionBuilder functions.
-   2. Define `[RegisterServiceAs(Type[])]` on a MonoBehaviour class, attach to serivces prefab, and it will be automatically registered.
+And assign a application services prefab in the `Project Settings/ServiceSettings`.
+- Any `[RegisterServices]` methods on components on the prefab will be called with the application service collection builder.
+- Any `[RegisterServiceAs(Type[])]` components on the prefab will be automatically registered.
 
 This prefab will be automatically injected into the first scene that's loaded.
 
