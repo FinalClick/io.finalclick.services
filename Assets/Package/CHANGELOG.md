@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.2] - 2025-05-03
+
+### Changed
+- Changed way servies are created in editor, so now they are always created before default Awake order the same as builds.
+
 ## [2.0.1] - 2025-05-03
 
 ### Added
