@@ -21,16 +21,34 @@ namespace FinalClick.Services.Injection
         {
             if (services.TryGet(propertyInfo.PropertyType, out object service) == false)
             {
+                if (IsNullable(propertyInfo.PropertyType))
+                {
+                    // Skip injection; leave the property as null
+                    return;
+                }
+
                 throw new ArgumentException($"Unable to find service of type '{propertyInfo.PropertyType}' for property '{propertyInfo.Name}' on '{injectInto}'");
             }
-        
+
             if (propertyInfo.CanWrite == false)
             {
                 InjectServiceOnPropertyBackingField(injectInto, service, propertyInfo);
                 return;
             }
-        
+
             propertyInfo.SetValue(injectInto, service);
+        }
+
+        private static bool IsNullable(Type type)
+        {
+            // For reference types (including interfaces), they are always nullable
+            if (!type.IsValueType)
+            {
+                return true;
+            }
+
+            // For Nullable<T> value types
+            return Nullable.GetUnderlyingType(type) != null;
         }
         
         private static void InjectServiceOnPropertyBackingField<T>(object injectInto, T value, PropertyInfo propertyInfo)

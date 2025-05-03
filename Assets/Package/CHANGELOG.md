@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.1] - 2025-05-03
+
+### Added
+- Added Nullable service injection support, so if a service doesnt exist it doesnt throw an exception when using nullables.
+
 ## [2.0.0] - 2025-04-30
 
 ### Added
