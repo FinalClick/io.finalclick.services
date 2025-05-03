@@ -11,39 +11,20 @@ namespace FinalClick.Services.Editor
 
         public void OnProcessScene(Scene scene, BuildReport report)
         {
-            // Only inject into the first scene boot scene when building.
-            if (Application.isPlaying == false && SceneManager.GetSceneAt(0) != scene)
-            {
-                return;
-            }
-
-            // If already created application services, we dont need to do again.
-            if(Application.isPlaying == true && ApplicationServices.HasStarted() == true)
+            // ApplicationServivcesEditorInitializer handles in editor, as it needs to be created before the awake of other objects.
+            if(Application.isPlaying == true)
             {
                 return;
             }
             
-            // Create from prefab in settings, or make blank gameobject.
-            bool usePrefab = ServicesProjectSettings.TryGetServicesPrefab(out GameObject servicesPrefab);
+            // Only inject into the first scene boot scene, as then it will always be started first.
+            if (SceneManager.GetSceneAt(0) != scene)
+            {
+                return;
+            }
 
-            GameObject servicesInstance = usePrefab ? GameObject.Instantiate(servicesPrefab) : new GameObject("Application Services");
-
-            AddSavedServicesToApplicationServices(servicesInstance);
-            SetGameObjectAsApplicationServices(servicesInstance);
-            
+            var servicesInstance = ApplicationServicesBootstrapFactory.Create();
             Debug.Log($"Injecting {servicesInstance.name} into {scene.name}");
-        }
-
-        private void AddSavedServicesToApplicationServices(GameObject gameObject)
-        {
-            var component = gameObject.AddComponent<RegisterApplicationServices>();
-            var servicesData = ServicesProjectSettings.GetApplicationServiceRegistrationData();
-            component.SetData(servicesData);
-        }
-        
-        private static void SetGameObjectAsApplicationServices(GameObject gameObject)
-        {
-            gameObject.AddComponent<ApplicationServicesMarker>();
         }
     }
 }
