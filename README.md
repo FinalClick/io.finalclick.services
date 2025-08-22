@@ -14,15 +14,18 @@ GameManager gameManager = GameManager.Instance;
 
 Write this:
 ```csharp
-GameManager gameManager = gameObject.GetService<GameManager>;
+GameManager gameManager = ApplicationServices.Get<GameManager>();
+```
+
+or this:
+```csharp
+GameManager gameManager = gameObject.GetService<GameManager>();
 ```
 ---
 
 ## Overview
 
-`FinalClick.Services` allows you to register and resolve services both at the project/application level and per scene level. The system is designed to integrate seamlessly with Unity's Play Mode lifecycle and scene loading events.
-
-Services can be registered using static methods, allowing you to create pure csharp services, or via MonoBehaviours which lets you leverage references to assets or scene objects.
+`FinalClick.Services` allows you to register and resolve services both at the Project/Application level or at an Individual Scene level. Services can be pure C# classes or MonoBehaviours if you require references to assets or scene objects.
 
 ---
 
@@ -41,6 +44,14 @@ Services can be registered using static methods, allowing you to create pure csh
 ## 🔍 Getting Services
 
 ### Inside a Service
+
+```
+[InjectService] 
+            │
+            └─ SceneServices.Get<T>(scene)
+                │
+                └─ ApplicationServices.Get<T>()
+```
 
 Within a Service you can use the `[InjectService]` attribute on a property
 
@@ -64,6 +75,14 @@ The service will be injected into the backing field of the property.
 > Note, there are corresponding `TryGet` functions for the following `Get` functions
 
 There are 3 ways to get services if the requester is not a service.
+
+```
+GameObject.GetService<T>()
+                │
+                └─ SceneServices.Get<T>(scene)
+                    │
+                    └─ ApplicationServices.Get<T>()
+```
 
 ### GameObject Level
 
